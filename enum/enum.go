@@ -1,5 +1,7 @@
 package enum
 
+import "fmt"
+
 const (
 	GL_BYTE                    = 0x00001400
 	GL_UNSIGNED_BYTE           = 0x00001401
@@ -23,7 +25,7 @@ const (
 	GL_LUMINANCE_ALPHA         = 0x0000190A
 )
 
-var typeStrings = map[uint]string{
+var typeStrings = map[uint32]string{
 	GL_BYTE:                    "GL_BYTE",
 	GL_UNSIGNED_BYTE:           "GL_UNSIGNED_BYTE",
 	GL_SHORT:                   "GL_SHORT",
@@ -38,15 +40,15 @@ var typeStrings = map[uint]string{
 	GL_UNSIGNED_INT_10_10_10_2: "GL_UNSIGNED_INT_10_10_10_2",
 }
 
-func TypeString(e uint) string {
+func TypeString(e uint32) string {
 	if s, ok := typeStrings[e]; ok {
 		return s
 	} else {
-		return "Invalid type"
+		return fmt.Sprintf("Invalid type(0x%X)", e)
 	}
 }
 
-var formatStrings = map[uint]string{
+var formatStrings = map[uint32]string{
 	GL_RED:             "GL_RED",
 	GL_GREEN:           "GL_GREEN",
 	GL_BLUE:            "GL_BLUE",
@@ -57,10 +59,10 @@ var formatStrings = map[uint]string{
 	GL_LUMINANCE_ALPHA: "GL_LUMINANCE_ALPHA",
 }
 
-func FormatString(e uint) string {
+func FormatString(e uint32) string {
 	if s, ok := formatStrings[e]; ok {
 		return s
 	} else {
-		return "Invalid format"
+		return fmt.Sprintf("Invalid format(0x%X)", e)
 	}
 }
