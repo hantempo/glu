@@ -39,6 +39,23 @@ func TestR8(t *testing.T) {
 	}
 }
 
+func TestRGB(t *testing.T) {
+	var c RGB
+	if r, g, b, a := c.RGBA(); r != 0 || g != 0 || b != 0 || a != 0xFFFF {
+		t.Errorf("r=0x%X g=0x%X b=0x%X a=0x%X", r, g, b, a)
+	}
+
+	c = RGB{0x5F, 0x2E, 0x3C}
+	if r, g, b, a := c.RGBA(); r != 0x5F5F || g != 0x2E2E || b != 0x3C3C || a != 0xFFFF {
+		t.Errorf("r=0x%X g=0x%X b=0x%X a=0x%X", r, g, b, a)
+	}
+
+	c = RGBModel.Convert(color.RGBA64{0x5151, 0xB6B6, 0x5151, 0xFFFF}).(RGB)
+	if cnew := (RGB{0x51, 0xB6, 0x51}); c != cnew {
+		t.Error()
+	}
+}
+
 func TestRGB565(t *testing.T) {
 	var c RGB565
 	if r, g, b, a := c.RGBA(); r != 0 || g != 0 || b != 0 || a != 0xFFFF {

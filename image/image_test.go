@@ -38,3 +38,15 @@ func TestImage(t *testing.T) {
 		}
 	}
 }
+
+func TestCompressedImage(t *testing.T) {
+	testImage := []CompressedImage{
+		NewETC1(image.Rect(0, 0, 10, 10)),
+	}
+	for _, m := range testImage {
+		if !image.Rect(0, 0, 10, 10).Eq(m.Bounds()) {
+			t.Errorf("%T: want bounds %v, got %v", m, image.Rect(0, 0, 10, 10), m.Bounds())
+			continue
+		}
+	}
+}

@@ -30,6 +30,20 @@ func (c R8) RGBA() (r, g, b, a uint32) {
 	return
 }
 
+// RGB represents a 24-bit opaque color,
+// having 8 bits for each of red, green and blue
+type RGB struct {
+	R, G, B uint8
+}
+
+func (c RGB) RGBA() (r, g, b, a uint32) {
+	r = uint32(c.R) * 0x101
+	g = uint32(c.G) * 0x101
+	b = uint32(c.B) * 0x101
+	a = 0xFFFF
+	return
+}
+
 // RGB565 represents a 16-bit opaque color,
 // having 5 bits for red, blue and 6 bits for green.
 type RGB565 struct {
@@ -95,6 +109,7 @@ func (c NBGRA8888) RGBA() (r, g, b, a uint32) {
 var (
 	NGrayAlphaModel color.Model = color.ModelFunc(nGrayAlphaModel)
 	R8Model         color.Model = color.ModelFunc(r8Model)
+	RGBModel        color.Model = color.ModelFunc(rgbModel)
 	RGB565Model     color.Model = color.ModelFunc(rgb565Model)
 	NRGBA4444Model  color.Model = color.ModelFunc(nRGBA4444Model)
 	NRGBA5551Model  color.Model = color.ModelFunc(nRGBA5551Model)
@@ -117,6 +132,15 @@ func r8Model(c color.Color) color.Color {
 
 	r, _, _, _ := c.RGBA()
 	return R8{uint8(r & 0xFF)}
+}
+
+func rgbModel(c color.Color) color.Color {
+	if _, ok := c.(RGB); ok {
+		return c
+	}
+
+	r, g, b, _ := c.RGBA()
+	return RGB{uint8(r & 0xFF), uint8(g & 0xFF), uint8(b & 0xFF)}
 }
 
 func rgb565Model(c color.Color) color.Color {

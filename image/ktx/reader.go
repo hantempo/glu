@@ -77,6 +77,11 @@ func (d *decoder) decode(r io.Reader, configOnly bool) error {
 	d.height = int(decodeUint32(buf[24:28], isLittleEndianness))
 	log.Printf("pixelWidth : %v\n", d.width)
 	log.Printf("pixelHeight : %v\n", d.height)
+	log.Printf("pixelDepth : %v\n", decodeUint32(buf[28:32], isLittleEndianness))
+	log.Printf("numberOfArrayElements : %v\n", decodeUint32(buf[32:], isLittleEndianness))
+	log.Printf("numberOfFaces : %v\n", decodeUint32(buf[36:], isLittleEndianness))
+	log.Printf("numberOfMipmapLevels : %v\n", decodeUint32(buf[40:], isLittleEndianness))
+	log.Printf("numberOfKeyValuePairs : %v\n", decodeUint32(buf[44:], isLittleEndianness))
 
 	buf = tmp[:4]
 	if _, err := io.ReadFull(r, buf); err != nil {
@@ -101,6 +106,7 @@ func (d *decoder) decode(r io.Reader, configOnly bool) error {
 		if _, err := io.ReadFull(r, nrgba4444.Pix); err != nil {
 			return err
 		}
+
 		d.im = nrgba4444
 		d.model = glcolor.NRGBA4444Model
 	} else {
