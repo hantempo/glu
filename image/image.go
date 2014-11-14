@@ -50,6 +50,50 @@ func NewRGB565(r image.Rectangle) *RGB565 {
 	return &RGB565{buf, w * 2, r}
 }
 
+// RGB is an in-memory image whose At method returns color.RGB values.
+type RGB struct {
+	Pix    []uint8
+	Stride int
+	Rect   image.Rectangle
+}
+
+func (p *RGB) ColorModel() color.Model {
+	return glcolor.RGBModel
+}
+
+func (p *RGB) Bounds() image.Rectangle {
+	return p.Rect
+}
+
+func (p *RGB) At(x, y int) color.Color {
+	if !(image.Point{x, y}.In(p.Rect)) {
+		return glcolor.RGB{}
+	}
+	i := p.PixOffset(x, y)
+	return glcolor.RGB{p.Pix[i], p.Pix[i+1], p.Pix[i+2]}
+}
+
+func (p *RGB) PixOffset(x, y int) int {
+	return (y-p.Rect.Min.Y)*p.Stride + (x-p.Rect.Min.X)*3
+}
+
+func (p *RGB) Set(x, y int, c color.Color) {
+	if !(image.Point{x, y}.In(p.Rect)) {
+		return
+	}
+	i := p.PixOffset(x, y)
+	c1 := glcolor.RGBModel.Convert(c).(glcolor.RGB)
+	p.Pix[i] = c1.R
+	p.Pix[i+1] = c1.G
+	p.Pix[i+2] = c1.B
+}
+
+func NewRGB(r image.Rectangle) *RGB {
+	w, h := r.Dx(), r.Dy()
+	buf := make([]byte, w*h*3)
+	return &RGB{buf, w * 3, r}
+}
+
 // NRGBA4444 is an in-memory image whose At method returns color.NRGBA4444 values.
 type NRGBA4444 struct {
 	Pix    []byte

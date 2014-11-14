@@ -93,6 +93,7 @@ func (d *decoder) decode(r io.Reader, configOnly bool) error {
 	var (
 		gray      *image.Gray
 		nrgba4444 *glimage.NRGBA4444
+		etc1      *glimage.ETC1
 	)
 	if glType == enum.GL_UNSIGNED_BYTE && glFormat == enum.GL_LUMINANCE {
 		gray = image.NewGray(image.Rect(0, 0, d.width, d.height))
@@ -109,6 +110,19 @@ func (d *decoder) decode(r io.Reader, configOnly bool) error {
 
 		d.im = nrgba4444
 		d.model = glcolor.NRGBA4444Model
+	} else if glType == 0 && glFormat == 0 {
+		// For compressed formats
+		if glInternalFormat == enum.GL_ETC1_RGB8_OES {
+			etc1 = glimage.NewETC1(image.Rect(0, 0, d.width, d.height))
+			if _, err := io.ReadFull(r, etc1.Pix); err != nil {
+				return err
+			}
+
+			d.im = etc1
+			d.model = glcolor.RGBModel
+		} else {
+			return fmt.Errorf("KTX reader: unrecognized compressed internal format [%v]\n", glInternalFormat)
+		}
 	} else {
 		return fmt.Errorf("KTX reader: unsupported type-format combination [%v %v]\n", glType, glFormat)
 	}
